@@ -1,79 +1,68 @@
 import wolframalpha
-import speech_recognition as sr
-import pyjokes
 import pyttsx3
-import Functions
-
-
-def newquestion():
-
-    nsearch = input("Do you have something else you'd like to know?(y for yes and n for no)")
-
-    if nsearch == 'y':
-        nreq = input("Okay, what would you like to know?")
-        nres = client.query(nreq)
-
-        if nreq == "stop":    #if user acciodentally hits y they can still stop it
-            quit()
-
-        print(next(nres.results).text)
-
-        ncont = input("would you like more information? (y for yes, n for no)")
-        if ncont == "y":
-            for pod in nres.pods:
-                for sub in pod.subpods:
-                    print(sub.plaintext)
-            newquestion()
-
-        if ncont == 'n':
-            newquestion()
+engine = pyttsx3.init()
 
 
 
 
-
-
-
-
-sr.__version__
-
-r = sr.Recognizer()
 
 
 client = wolframalpha.Client('RU6X4L-GQ655666HJ')
 
 
+def newquestion():
+    engine.say("Do you have something else you'd like to know?(y for yes and n for no)")
 
+    nsearch = input("Do you have something else you'd like to know?(y for yes and n for no)")
 
-print("At any point you can say stop and I will stop.")
-req = input("Hi, I'm Eve. What do you need?")
+    while nsearch == 'y':
+        engine.say("Okay, what would you like to know?")
+        engine.runAndWait()
+        nreq = input("Okay, what would you like to know?")
+        nres = client.query(nreq)
+        engine.say((nres.results).text)
+        engine.runAndWait()
+        print(next(nres.results).text)
 
-
-if req == "stop":
-    quit()
-if "joke" in req:
-    x = 1
-    while x > 0:
-        print(pyjokes.get_joke())
-        x -= 1
-
-if "joke" not in req:
-    res = client.query(req)
-    count = 0                                               #stores the question and gets the first result and prints it
-    cont = 'n'
-    print(next(res.results).text)
-
-    cont = input("would you like more information? (y for yes, n for no)")      #
-
-    if cont == "y":
-        for pod in res.pods:
-            for sub in pod.subpods:     #if user wants more info this will print all of the related pods to the question
-                print(sub.plaintext)    # until there are no new pods
-        newquestion()
-        cont = "n"
-
+        engine.say("would you like more information? (y for yes, n for no)")
+        engine.runAndWait()
+        ncont = input("would you like more information? (y for yes, n for no)")
+        if ncont == "y":
+            for pod in res.pods:
+                for sub in pod.subpods:
+                    engine.say(sub.plaintext)
+                    engine.runAndWait()
+                    print(sub.plaintext)
+        elif ncont == 'n':
+            engine.say("Do you have something else you'd like to know?(y for yes and n for no)")
+            engine.runAndWait()
+            nsearch = input("Do you have something else you'd like to know?(y for yes and n for no)")
     else:
         pass
-newquestion()           #bug that doesnt end up asking u if u ahve abnother question it just automatically
-                #has u ask another one so ur stuck in a loop, if u answer yes to more info
-                #it will automatically ask what else would u want to know
+
+    return
+
+engine.say("Hi, I'm Eve. What do you need?")
+engine.runAndWait()
+req = input("Hi, I'm Eve. What do you need?")
+res = client.query(req)
+count = 0
+cont = 'n'
+engine.say(res.results)
+engine.runAndWait()
+print(next(res.results).text)
+engine.say("would you like more information? (y for yes, n for no)")
+engine.runAndWait()
+cont = input("would you like more information? (y for yes, n for no)")
+
+if cont == "y":
+    for pod in res.pods:
+        for sub in pod.subpods:
+            engine.say(sub.plaintext)
+            engine.runAndWait()
+            print(sub.plaintext)
+    newquestion()
+
+else:
+    pass
+    newquestion()
